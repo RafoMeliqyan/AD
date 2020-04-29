@@ -1,85 +1,49 @@
 package storage;
 
 import exception.UserNotFoundException;
-
 import model.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class UserStorage {
-//    private int size = 0;
-    List<User> userList;
-//    Object[] array;
+    Map<User,Integer> userIntegerMap;
 
     public UserStorage(int length) {
-        userList = new ArrayList<>();
-//        array = new Object[length];
+        userIntegerMap = new HashMap<>(length);
     }
 
     public UserStorage() {
-        userList = new ArrayList<>();
-//        array = new Object[16];
+        userIntegerMap = new HashMap<>();
     }
 
     public void add(User value) throws NullPointerException{
-        userList.add(value);
+        userIntegerMap.put(value,1);
     }
 
-//    private void extend() {
-//        Object[] tmp = new User[array.length + 10];
-//        System.arraycopy(array,0,tmp,0,array.length);
-//        array = tmp;
-//    }
 
-    public void printAllUsers() {
-        for (User user : userList) {
-            System.out.println(user);
-        }
-//        if (size != 0) {
-//            for (int i = 0; i < size; i++) {
-//                System.out.println(array[i]);
-//            }
-//        } else {
-//            System.out.println("Please add post!!!");
-//        }
-    }
 
-    public User getUserByEmail(String email) throws UserNotFoundException {
-        userList.get(Integer.parseInt(email));
-//        for (int i = 0; i < array.length; i++) {
-//            User t = (User) array[i];
-//            if (t.getEmail().equals(email)) {
-//                return (T) array[i];
-//            }
-//        }
-        throw new UserNotFoundException("User with " + email + " does not exist");
-    }
-
-    public User getUserByEmailAndPassword(String email, String password) throws UserNotFoundException {
-        for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(0).equals(email) && userList.get(0).equals(password)) {
-                return (User) userList;
-            } else {
-                System.out.println("Wrong email or password!!!");
+    public User getUserByPhoneNumberAndPassword(int phoneNumber, String password) throws UserNotFoundException {
+        for (User user : userIntegerMap.keySet()) {
+            if (user.getPhoneNumber() == phoneNumber && user.getPassword().equals(password)) {
+                return user;
             }
         }
-        throw new UserNotFoundException("User with email " + email + " and password " + password + " does not exist");
+        throw new UserNotFoundException("User with email " + phoneNumber + " and password " + password + " does not exist");
     }
 
     public User getUserByName(String name) throws UserNotFoundException {
-//        for (int i = 0; i < array.length; i++) {
-//            User t = (User) array[i];
-//            if (t.getName().equals(name)) {
-//                return (T) array[i];
-//            }
-//        }
+        for (User user : userIntegerMap.keySet()) {
+            if (user.getName().equals(name)) {
+                return user;
+            }
+        }
         throw new UserNotFoundException("User with name " + name + " does not exist");
     }
 
 
     public boolean isEmptyUser() {
-        return userList.isEmpty();
+        return userIntegerMap.isEmpty();
     }
 }
