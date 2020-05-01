@@ -25,6 +25,8 @@ public class AdStorage {
 
     public AD printAdByCategory(String category) throws Exception {
         if (adList.isEmpty()) {
+            System.out.println("Add ad first!!!");
+        } else {
             for (AD ad : adList) {
                 if (ad.getCategory().equals(category)) {
                     System.out.println(ad);
@@ -32,8 +34,6 @@ public class AdStorage {
                     throw new Exception("No ad with %s category");
                 }
             }
-        } else {
-            System.out.println("Add ad first!!!");
         }
         return null;
     }
@@ -55,27 +55,29 @@ public class AdStorage {
     }
 
     public void deleteMyAllAds() {
-        if (adList.size() != 0) {
+        if (adList.isEmpty()) {
+            System.out.println("Please add ad first!!!");
+        } else {
             for (AD ad : adList) {
                 adList.remove(ad);
             }
             System.out.println("Deleted!!!");
-        } else {
-            System.out.println("Please add ad first!!!");
         }
     }
 
     public void deleteAdsByTitle(String title) throws Exception {
-        if (adList.size() != 0) {
+        if (adList.isEmpty()) {
+            System.out.println("Please add ad first!!!");
+        } else {
             for (AD ad : adList) {
                 if (ad.getTitle().equals(title)) {
                     adList.remove(ad);
                     System.out.println("Deleted!!!");
+                } else {
+                    System.out.println("No ad with " + title + "title!");
                 }
             }
             throw new Exception("No ad with %s title");
-        } else {
-            System.out.println("Please add ad first!!!");
         }
     }
 
