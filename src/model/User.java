@@ -1,24 +1,24 @@
 package model;
 
 public class User {
+
     private String name;
-    private String Surname;
-    private String gender;
+    private String surname;
     private int age;
-    private int phoneNumber;
+    private Gender gender;
+    private String phoneNumber;
     private String password;
 
-    public User(String name, String surname, String gender, int age, int phoneNumber, String password) {
+    public User(String name, String surname, int age, Gender gender, String phoneNumber, String password) {
         this.name = name;
-        Surname = surname;
-        this.gender = gender;
+        this.surname = surname;
         this.age = age;
+        this.gender = gender;
         this.phoneNumber = phoneNumber;
         this.password = password;
     }
 
     public User() {
-
     }
 
     public String getName() {
@@ -30,19 +30,11 @@ public class User {
     }
 
     public String getSurname() {
-        return Surname;
+        return surname;
     }
 
     public void setSurname(String surname) {
-        Surname = surname;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
+        this.surname = surname;
     }
 
     public int getAge() {
@@ -53,11 +45,19 @@ public class User {
         this.age = age;
     }
 
-    public int getPhoneNumber() {
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -76,21 +76,21 @@ public class User {
 
         User user = (User) o;
 
-        if (age != user.age) return false;
-        if (phoneNumber != user.phoneNumber) return false;
         if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (Surname != null ? !Surname.equals(user.Surname) : user.Surname != null) return false;
-        if (gender != null ? !gender.equals(user.gender) : user.gender != null) return false;
+        if (surname != null ? !surname.equals(user.surname) : user.surname != null) return false;
+        if (age != user.getAge()) return false;
+        if (gender != user.gender) return false;
+        if (phoneNumber != null ? !phoneNumber.equals(user.phoneNumber) : user.phoneNumber != null) return false;
         return password != null ? password.equals(user.password) : user.password == null;
     }
 
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (Surname != null ? Surname.hashCode() : 0);
-        result = 31 * result + (gender != null ? gender.hashCode() : 0);
+        result = 31 * result + (surname != null ? surname.hashCode() : 0);
         result = 31 * result + age;
-        result = 31 * result + phoneNumber;
+        result = 31 * result + (gender != null ? gender.hashCode() : 0);
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;
     }
@@ -99,11 +99,10 @@ public class User {
     public String toString() {
         return "User{" +
                 "name='" + name + '\'' +
-                ", Surname='" + Surname + '\'' +
-                ", gender='" + gender + '\'' +
-                ", age=" + age +
-                ", phoneNumber=" + phoneNumber +
-                ", password='" + password + '\'' +
+                ", surname='" + surname + '\'' +
+                ", age='" + age + '\'' +
+                ", gender=" + gender +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
     }
 }
