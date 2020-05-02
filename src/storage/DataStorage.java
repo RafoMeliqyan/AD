@@ -36,8 +36,12 @@ public class DataStorage {
     }
 
     public void printItems() {
-        for (Item item : items) {
-            System.out.println(item);
+        if (items.isEmpty()) {
+            System.out.println("Please add ad first!");
+        } else {
+            for (Item item : items) {
+                System.out.println(item);
+            }
         }
     }
 
@@ -65,17 +69,25 @@ public class DataStorage {
     }
 
     public void printItemsByUser(User user) {
-        for (Item item : items) {
-            if (item.getUser().equals(user)) {
-                System.out.println(item);
+        if (items.isEmpty()) {
+            System.out.println("Please add ad first!");
+        } else {
+            for (Item item : items) {
+                if (item.getUser().equals(user)) {
+                    System.out.println(item);
+                }
             }
         }
     }
 
     public void printItemsByCategory(Category category) {
-        for (Item item : items) {
-            if (item.getCategory() == category) {
-                System.out.println(item);
+        if (items.isEmpty()) {
+            System.out.println("Please add ad first!");
+        } else {
+            for (Item item : items) {
+                if (item.getCategory() == category) {
+                    System.out.println(item);
+                }
             }
         }
     }
@@ -86,6 +98,7 @@ public class DataStorage {
             Item next = iterator.next();
             if (next.getUser().equals(user)) {
                 iterator.remove();
+                System.out.println("Deleted!!");
             }
         }
 //        items.removeIf(item -> item.getUser().equals(user));
@@ -93,6 +106,7 @@ public class DataStorage {
 
     public void deleteItemsById(long id) {
         items.remove(getItemById(id));
+        System.out.println("Deleted!!");
     }
 
 
