@@ -23,6 +23,7 @@ public class AdvertisementMain implements Commands {
 
         boolean isRun = true;
         while (isRun) {
+            dataStorage.initData();
             Commands.printMainCommands();
             int command;
             try {

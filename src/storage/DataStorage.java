@@ -124,4 +124,11 @@ public class DataStorage {
         System.out.println("Deleted!!");
     }
 
+    public void initData() throws IOException, ClassNotFoundException {
+        FileUtil fileUtil = new FileUtil();
+        FileUtilItem fileUtilItem = new FileUtilItem();
+        fileUtil.deserializeUserMap();
+        fileUtilItem.deserializeItemMap();
+    }
+
 }
