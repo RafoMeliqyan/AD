@@ -6,6 +6,7 @@ import model.Item;
 import model.User;
 import storage.DataStorage;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
@@ -16,7 +17,7 @@ public class AdvertisementMain implements Commands {
     private static DataStorage dataStorage = new DataStorage();
     private static User currentUser = null;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         //init data
         dataStorage.add(new User("poxos","poxosyan",22,Gender.MALE,"321321","321321"));
 
@@ -45,7 +46,7 @@ public class AdvertisementMain implements Commands {
         }
     }
 
-    private static void registerUser() {
+    private static void registerUser() throws IOException, ClassNotFoundException {
         System.out.println("Please input user data " +
                 "name,surname,gender(MALE,FEMALE),age,phoneNumber,password");
         try {
@@ -70,7 +71,7 @@ public class AdvertisementMain implements Commands {
         }
     }
 
-    private static void loginUser() {
+    private static void loginUser() throws IOException, ClassNotFoundException {
         System.out.println("Please input phoneNumber,password");
         try {
             String loginStr = scanner.nextLine();
@@ -82,13 +83,12 @@ public class AdvertisementMain implements Commands {
             } else {
                 System.out.println("Wrong phoneNumber or password");
             }
-
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Wrong Data!");
         }
     }
 
-    private static void loginSuccess() {
+    private static void loginSuccess() throws IOException, ClassNotFoundException {
         System.out.println("Welcome " + currentUser.getName() + "!");
         boolean isRun = true;
         while (isRun) {
@@ -133,7 +133,7 @@ public class AdvertisementMain implements Commands {
         }
     }
 
-    private static void deleteById() {
+    private static void deleteById() throws IOException, ClassNotFoundException {
         System.out.println("please choose id from list");
         dataStorage.printItemsByUser(currentUser);
         long id = Long.parseLong(scanner.nextLine());
@@ -169,7 +169,6 @@ public class AdvertisementMain implements Commands {
         } catch (Exception e) {
             System.out.println("Wrong Data!");
         }
-
     }
 
 }

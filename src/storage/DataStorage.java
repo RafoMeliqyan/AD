@@ -1,9 +1,12 @@
 package storage;
 
+import file.FileUtil;
+import file.FileUtilItem;
 import model.Category;
 import model.Item;
 import model.User;
 
+import java.io.IOException;
 import java.util.*;
 
 public class DataStorage {
@@ -13,13 +16,19 @@ public class DataStorage {
     private Map<String, User> userMap = new HashMap<>();
     private List<Item> items = new ArrayList<>();
 
-    public void add(User user) {
+    public void add(User user) throws IOException, ClassNotFoundException {
+        FileUtil fileUtil = new FileUtil();
         userMap.put(user.getPhoneNumber(), user);
+        fileUtil.serializeUserMap(userMap);
+        fileUtil.deserializeUserMap();
     }
 
-    public void add(Item item) {
+    public void add(Item item) throws IOException, ClassNotFoundException {
+        FileUtilItem fileUtilItem = new FileUtilItem();
         item.setId(itemId++);
         items.add(item);
+        fileUtilItem.serializeItemMap(items);
+        fileUtilItem.deserializeItemMap();
     }
 
     public User getUser(String phoneNumber) {
@@ -92,22 +101,27 @@ public class DataStorage {
         }
     }
 
-    public void deleteItemsByUser(User user) {
+    public void deleteItemsByUser(User user) throws IOException, ClassNotFoundException {
+        FileUtil fileUtil = new FileUtil();
         Iterator<Item> iterator = items.iterator();
         while (iterator.hasNext()) {
             Item next = iterator.next();
             if (next.getUser().equals(user)) {
                 iterator.remove();
                 System.out.println("Deleted!!");
+                fileUtil.serializeUserMap(userMap);
+                fileUtil.deserializeUserMap();
             }
         }
 //        items.removeIf(item -> item.getUser().equals(user));
     }
 
-    public void deleteItemsById(long id) {
+    public void deleteItemsById(long id) throws IOException, ClassNotFoundException {
+        FileUtilItem fileUtilItem = new FileUtilItem();
         items.remove(getItemById(id));
+        fileUtilItem.serializeItemMap(items);
+        fileUtilItem.deserializeItemMap();
         System.out.println("Deleted!!");
     }
-
 
 }
