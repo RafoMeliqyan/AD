@@ -18,11 +18,9 @@ public class FileUtilItem {
     public List<Item> deserializeItemMap() throws IOException, ClassNotFoundException {
         ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(FILE_PATH_ITEM));
         Object object = objectInputStream.readObject();
-        if (object instanceof Item) {
-            Item item = (Item) object;
-            System.out.println(item);
-        }
-        return null;
+        List<Item> items = (List<Item>) object;
+        objectInputStream.close();
+        return items;
     }
 
 }

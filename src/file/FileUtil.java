@@ -18,11 +18,9 @@ public class FileUtil {
     public Map<String,User> deserializeUserMap() throws IOException, ClassNotFoundException {
         ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(FILE_PATH_USER));
         Object object = objectInputStream.readObject();
-        if (object instanceof User) {
-            User user1 = (User) object;
-            System.out.println(user1);
-        }
-        return null;
+        Map<String, User> stringUserMap = (Map<String, User>) object;
+        objectInputStream.close();
+        return stringUserMap;
     }
 
 }

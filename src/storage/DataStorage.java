@@ -6,6 +6,7 @@ import model.Category;
 import model.Item;
 import model.User;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.*;
 
@@ -127,8 +128,13 @@ public class DataStorage {
     public void initData() throws IOException, ClassNotFoundException {
         FileUtil fileUtil = new FileUtil();
         FileUtilItem fileUtilItem = new FileUtilItem();
-        fileUtil.deserializeUserMap();
-        fileUtilItem.deserializeItemMap();
+        try {
+            fileUtil.deserializeUserMap();
+            fileUtilItem.deserializeItemMap();
+        } catch (EOFException e) {
+            System.out.println("File is empty!!");
+        }
+
     }
 
 }
