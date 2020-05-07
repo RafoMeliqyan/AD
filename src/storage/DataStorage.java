@@ -1,12 +1,12 @@
 package storage;
 
 import file.FileUtil;
-import file.FileUtilItem;
 import model.Category;
 import model.Item;
 import model.User;
 
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -18,18 +18,14 @@ public class DataStorage {
     private List<Item> items = new ArrayList<>();
 
     public void add(User user) throws IOException, ClassNotFoundException {
-        FileUtil fileUtil = new FileUtil();
         userMap.put(user.getPhoneNumber(), user);
-        fileUtil.serializeUserMap(userMap);
-        fileUtil.deserializeUserMap();
+        FileUtil.serializeUserMap(userMap);
     }
 
     public void add(Item item) throws IOException, ClassNotFoundException {
-        FileUtilItem fileUtilItem = new FileUtilItem();
         item.setId(itemId++);
         items.add(item);
-        fileUtilItem.serializeItemMap(items);
-        fileUtilItem.deserializeItemMap();
+        FileUtil.serializeItemList(items);
     }
 
     public User getUser(String phoneNumber) {
@@ -110,31 +106,25 @@ public class DataStorage {
             if (next.getUser().equals(user)) {
                 iterator.remove();
                 System.out.println("Deleted!!");
-                fileUtil.serializeUserMap(userMap);
-                fileUtil.deserializeUserMap();
             }
         }
+        FileUtil.serializeItemList(items);
 //        items.removeIf(item -> item.getUser().equals(user));
     }
 
     public void deleteItemsById(long id) throws IOException, ClassNotFoundException {
-        FileUtilItem fileUtilItem = new FileUtilItem();
         items.remove(getItemById(id));
-        fileUtilItem.serializeItemMap(items);
-        fileUtilItem.deserializeItemMap();
+        FileUtil.serializeItemList(items);
         System.out.println("Deleted!!");
     }
 
     public void initData() throws IOException, ClassNotFoundException {
-        FileUtil fileUtil = new FileUtil();
-        FileUtilItem fileUtilItem = new FileUtilItem();
-        try {
-            fileUtil.deserializeUserMap();
-            fileUtilItem.deserializeItemMap();
-        } catch (EOFException e) {
-            System.out.println("File is empty!!");
+        items = FileUtil.deserializeItemList();
+        userMap = FileUtil.deserializeUserMap();
+        if (items != null && !items.isEmpty()) {
+            Item item = items.get(items.size() - 1);
+            itemId = item.getId() + 1;
         }
-
     }
 
 }

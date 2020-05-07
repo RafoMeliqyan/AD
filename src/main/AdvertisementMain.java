@@ -19,7 +19,8 @@ public class AdvertisementMain implements Commands {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         //init data
-        dataStorage.add(new User("poxos","poxosyan",22,Gender.MALE,"321321","321321"));
+        dataStorage.initData();
+//        dataStorage.add(new User("poxos","poxosyan",22,Gender.MALE,"321321","321321"));
 
         boolean isRun = true;
         while (isRun) {
