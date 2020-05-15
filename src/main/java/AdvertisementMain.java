@@ -56,7 +56,7 @@ public class AdvertisementMain implements Commands {
         }
     }
 
-    private static void importFromXlsx() throws ClassNotFoundException {
+    private static void importFromXlsx() {
         System.out.println("Please select xlsx path");
         String xlsxPath = scanner.nextLine();
         try {
@@ -92,7 +92,7 @@ public class AdvertisementMain implements Commands {
         }
     }
 
-    private static void registerUser() throws IOException, ClassNotFoundException {
+    private static void registerUser() {
         System.out.println("Please input user data " +
                 "name,surname,gender(MALE,FEMALE),age,phoneNumber,password");
         try {
@@ -117,7 +117,7 @@ public class AdvertisementMain implements Commands {
         }
     }
 
-    private static void loginUser() throws IOException, ClassNotFoundException {
+    private static void loginUser() {
         System.out.println("Please input phoneNumber,password");
         try {
             String loginStr = scanner.nextLine();
@@ -134,7 +134,7 @@ public class AdvertisementMain implements Commands {
         }
     }
 
-    private static void loginSuccess() throws IOException, ClassNotFoundException {
+    private static void loginSuccess() {
         System.out.println("Welcome " + currentUser.getName() + "!");
         boolean isRun = true;
         while (isRun) {
@@ -173,13 +173,16 @@ public class AdvertisementMain implements Commands {
                 case DELETE_AD_BY_ID:
                     deleteById();
                     break;
+                    case IMPORT_ITEMS:
+                    importItemFromXlsx();
+                    break;
                 default:
                     System.out.println("Wrong command!");
             }
         }
     }
 
-    private static void deleteById() throws IOException, ClassNotFoundException {
+    private static void deleteById() {
         System.out.println("please choose id from list");
         dataStorage.printItemsByUser(currentUser);
         long id = Long.parseLong(scanner.nextLine());
@@ -203,18 +206,56 @@ public class AdvertisementMain implements Commands {
     }
 
     private static void addNewItem() {
-        System.out.println("Please input item data title,text,price,category");
-        System.out.println("Please choose category name from list: " + Arrays.toString(Category.values()));
+        System.out.println("Please select xlsx path for export items");
         try {
             String itemDataStr = scanner.nextLine();
-            String[] itemDataArr = itemDataStr.split(",");
-            Item item = new Item(itemDataArr[0], itemDataArr[1], Double.parseDouble(itemDataArr[2])
-                    , currentUser, Category.valueOf(itemDataArr[3]), new Date());
-            dataStorage.add(item);
-            System.out.println("Item was successfully added");
+            XSSFWorkbook workbook = new XSSFWorkbook(itemDataStr);
+            XSSFSheet sheet = workbook.getSheetAt(0);
+            int lastRow = sheet.getLastRowNum();
+            for (int i = 0; i <= lastRow; i++) {
+                System.out.println("Please input item data title,text,price,category");
+                System.out.println("Please choose category name from list: " + Arrays.toString(Category.values()));
+                String items = scanner.nextLine();
+                String[] itemDataArr = items.split(",");
+                Item item = new Item(itemDataArr[0], itemDataArr[1], Double.parseDouble(itemDataArr[2])
+                        , currentUser, Category.valueOf(itemDataArr[3]), new Date());
+                dataStorage.add(item);
+                System.out.println("Item was successfully added");
+                break;
+            }
         } catch (Exception e) {
             System.out.println("Wrong Data!");
         }
     }
 
+    private static void importItemFromXlsx() {
+        System.out.println("Please select xlsx path for items");
+        String itemPath = scanner.nextLine();
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook(itemPath);
+            XSSFSheet sheet = workbook.getSheetAt(0);
+            int lastRow = sheet.getLastRowNum();
+            for (int i = 1; i <= lastRow; i++) {
+                Row row = sheet.getRow(i);
+                String title = row.getCell(0).getStringCellValue();
+                String text = row.getCell(1).getStringCellValue();
+                Cell price = row.getCell(2);
+                Double priceStr = price.getNumericCellValue();
+                Category category = Category.valueOf(row.getCell(4).getStringCellValue());
+                Item item = new Item();
+                item.setTitle(title);
+                item.setText(text);
+                item.setPrice(priceStr);
+                item.setCreatedDate(new Date());
+                item.setCategory(category);
+                item.setUser(currentUser);
+                System.out.println(item);
+                dataStorage.add(item);
+                System.out.println("Item was success");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error while importing items");
+        }
+    }
 }

@@ -5,9 +5,6 @@ import model.Category;
 import model.Item;
 import model.User;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class DataStorage {
@@ -17,12 +14,12 @@ public class DataStorage {
     private Map<String, User> userMap = new HashMap<>();
     private List<Item> items = new ArrayList<>();
 
-    public void add(User user) throws IOException, ClassNotFoundException {
+    public void add(User user) {
         userMap.put(user.getPhoneNumber(), user);
         FileUtil.serializeUserMap(userMap);
     }
 
-    public void add(Item item) throws IOException, ClassNotFoundException {
+    public void add(Item item) {
         item.setId(itemId++);
         items.add(item);
         FileUtil.serializeItemList(items);
@@ -98,8 +95,7 @@ public class DataStorage {
         }
     }
 
-    public void deleteItemsByUser(User user) throws IOException, ClassNotFoundException {
-        FileUtil fileUtil = new FileUtil();
+    public void deleteItemsByUser(User user) {
         Iterator<Item> iterator = items.iterator();
         while (iterator.hasNext()) {
             Item next = iterator.next();
@@ -112,13 +108,13 @@ public class DataStorage {
 //        items.removeIf(item -> item.getUser().equals(user));
     }
 
-    public void deleteItemsById(long id) throws IOException, ClassNotFoundException {
+    public void deleteItemsById(long id) {
         items.remove(getItemById(id));
         FileUtil.serializeItemList(items);
         System.out.println("Deleted!!");
     }
 
-    public void initData() throws IOException, ClassNotFoundException {
+    public void initData() {
         items = FileUtil.deserializeItemList();
         userMap = FileUtil.deserializeUserMap();
         if (items != null && !items.isEmpty()) {
