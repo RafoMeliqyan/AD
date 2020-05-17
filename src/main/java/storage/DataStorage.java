@@ -123,4 +123,7 @@ public class DataStorage {
         }
     }
 
+    public List<Item> getItems() {
+        return items;
+    }
 }

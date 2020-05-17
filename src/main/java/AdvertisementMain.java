@@ -1,19 +1,17 @@
 
 import commands.Commands;
+import file.XLSXUtil;
 import model.Category;
 import model.Gender;
 import model.Item;
 import model.User;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import storage.DataStorage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class AdvertisementMain implements Commands {
@@ -59,36 +57,9 @@ public class AdvertisementMain implements Commands {
     private static void importFromXlsx() {
         System.out.println("Please select xlsx path");
         String xlsxPath = scanner.nextLine();
-        try {
-            XSSFWorkbook workbook = new XSSFWorkbook(xlsxPath);
-            XSSFSheet sheet = workbook.getSheetAt(0);
-            int lastRowNum = sheet.getLastRowNum();
-            for (int i = 1; i <= lastRowNum; i++) {
-                Row row = sheet.getRow(i);
-                String name = row.getCell(0).getStringCellValue();
-                String surname = row.getCell(1).getStringCellValue();
-                Double age = row.getCell(2).getNumericCellValue();
-                Gender gender = Gender.valueOf(row.getCell(3).getStringCellValue());
-                Cell phoneNumber = row.getCell(4);
-                String phoneNumberStr = phoneNumber.getCellType() == CellType.NUMERIC ? String.valueOf(Double.valueOf(phoneNumber.getNumericCellValue()).intValue())
-                        : phoneNumber.getStringCellValue();
-                Cell password = row.getCell(5);
-                String passwordStr = password.getCellType() == CellType.NUMERIC ? String.valueOf(Double.valueOf(password.getNumericCellValue()).intValue())
-                        : password.getStringCellValue();
-                User user = new User();
-                user.setName(name);
-                user.setSurname(surname);
-                user.setAge(age.intValue());
-                user.setGender(gender);
-                user.setPhoneNumber(phoneNumberStr);
-                user.setPassword(passwordStr);
-                System.out.println(user);
-                dataStorage.add(user);
-                System.out.println("Import was success");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error while importing users");
+        List<User> users = XLSXUtil.readUsers(xlsxPath);
+        for (User user : users) {
+            dataStorage.add(user);
         }
     }
 
@@ -173,13 +144,32 @@ public class AdvertisementMain implements Commands {
                 case DELETE_AD_BY_ID:
                     deleteById();
                     break;
-                    case IMPORT_ITEMS:
-                    importItemFromXlsx();
+                case IMPORT_ITEMS:
+                    importItemFromExcel();
+                    break;
+                case EXPORT_ITEMS:
+                    exportItemToExcel();
                     break;
                 default:
                     System.out.println("Wrong command!");
             }
         }
+    }
+
+    private static void exportItemToExcel() {
+        System.out.println("Please input folder path");
+        String path = scanner.nextLine();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                File file = new File(path);
+                if (file.exists() && file.isDirectory()) {
+                    XLSXUtil.writeItems(path, dataStorage.getItems());
+                } else {
+                    System.out.println("Please input valid folder path");
+                }
+            }
+        }).start();
     }
 
     private static void deleteById() {
@@ -206,56 +196,37 @@ public class AdvertisementMain implements Commands {
     }
 
     private static void addNewItem() {
-        System.out.println("Please select xlsx path for export items");
+        System.out.println("Please input item data title,text,price,category");
+        System.out.println("Please choose category name from list: " + Arrays.toString(Category.values()));
         try {
-            String itemDataStr = scanner.nextLine();
-            XSSFWorkbook workbook = new XSSFWorkbook(itemDataStr);
-            XSSFSheet sheet = workbook.getSheetAt(0);
-            int lastRow = sheet.getLastRowNum();
-            for (int i = 0; i <= lastRow; i++) {
-                System.out.println("Please input item data title,text,price,category");
-                System.out.println("Please choose category name from list: " + Arrays.toString(Category.values()));
-                String items = scanner.nextLine();
-                String[] itemDataArr = items.split(",");
-                Item item = new Item(itemDataArr[0], itemDataArr[1], Double.parseDouble(itemDataArr[2])
-                        , currentUser, Category.valueOf(itemDataArr[3]), new Date());
-                dataStorage.add(item);
-                System.out.println("Item was successfully added");
-                break;
-            }
+            String items = scanner.nextLine();
+            String[] itemDataArr = items.split(",");
+            Item item = new Item(itemDataArr[0], itemDataArr[1], Double.parseDouble(itemDataArr[2])
+                    , currentUser, Category.valueOf(itemDataArr[3]), new Date());
+            dataStorage.add(item);
+            System.out.println("Item was successfully added");
         } catch (Exception e) {
-            System.out.println("Wrong Data!");
+            e.getMessage();
         }
     }
 
-    private static void importItemFromXlsx() {
-        System.out.println("Please select xlsx path for items");
-        String itemPath = scanner.nextLine();
-        try {
-            XSSFWorkbook workbook = new XSSFWorkbook(itemPath);
-            XSSFSheet sheet = workbook.getSheetAt(0);
-            int lastRow = sheet.getLastRowNum();
-            for (int i = 1; i <= lastRow; i++) {
-                Row row = sheet.getRow(i);
-                String title = row.getCell(0).getStringCellValue();
-                String text = row.getCell(1).getStringCellValue();
-                Cell price = row.getCell(2);
-                Double priceStr = price.getNumericCellValue();
-                Category category = Category.valueOf(row.getCell(4).getStringCellValue());
-                Item item = new Item();
-                item.setTitle(title);
-                item.setText(text);
-                item.setPrice(priceStr);
-                item.setCreatedDate(new Date());
-                item.setCategory(category);
-                item.setUser(currentUser);
-                System.out.println(item);
-                dataStorage.add(item);
-                System.out.println("Item was success");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error while importing items");
+    private static void importItemFromExcel() {
+        System.out.println("Please input excel file path");
+        String path = scanner.nextLine();
+        File file = new File(path);
+        if (file.exists() && file.isFile()) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    List<Item> items = XLSXUtil.readItems(path);
+                    for (Item item : items) {
+                        item.setUser(dataStorage.getUser(item.getUser().getPhoneNumber()));
+                        dataStorage.add(item);
+                    }
+                }
+            }).start();
+        } else {
+            System.out.println("Please input valid folder path");
         }
     }
 }
